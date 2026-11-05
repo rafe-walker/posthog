@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
+import { z } from 'zod'
 
-import { generateZodFromSchemaRef } from '../../scripts/lib/json-schema-to-zod'
+import { generateZodFromSchemaRef, getEntryVarName } from '../../scripts/lib/json-schema-to-zod'
 
 describe('generateZodFromSchemaRef — array constraints', () => {
     it.each([
@@ -89,20 +90,38 @@ describe('generateZodFromSchemaRef — union primitive strictness', () => {
         expect(out).toContain(expected)
         expect(out).not.toContain('z.coerce')
     })
+})
 
-    it('keeps coercion on lone primitive fields', () => {
+describe('generateZodFromSchemaRef — lone primitive fields', () => {
+    function parseWith(property: object, input: unknown): unknown {
         const root = {
             definitions: {
-                Subject: {
-                    type: 'object',
-                    properties: { count: { type: 'number' }, flag: { type: 'boolean' } },
-                },
+                integer: { type: 'integer' },
+                Subject: { type: 'object', properties: { value: property }, required: ['value'] },
             },
         }
+        const code = `${generateZodFromSchemaRef(root, 'Subject')}\nreturn ${getEntryVarName('Subject')}`
+        // Run the emitted source, so that each case checks what a generated tool accepts, not the emitted text.
+        const schema = new Function('z', code)(z) as z.ZodType
+        const result = schema.safeParse({ value: input })
+        return result.success ? result.data : 'rejected'
+    }
 
-        const out = generateZodFromSchemaRef(root, 'Subject')
-
-        expect(out).toContain('z.coerce.number()')
-        expect(out).toContain('z.coerce.boolean()')
+    it.each([
+        ['boolean', 'false', { type: 'boolean' }, 'rejected'],
+        ['boolean', false, { type: 'boolean' }, { value: false }],
+        ['number', null, { type: 'number' }, 'rejected'],
+        ['number', '', { type: 'number' }, 'rejected'],
+        ['number', 1.5, { type: 'number' }, { value: 1.5 }],
+        ['nullable integer', null, { type: ['integer', 'null'] }, { value: null }],
+        [
+            'integer-or-null union',
+            null,
+            { anyOf: [{ $ref: '#/definitions/integer' }, { type: 'null' }] },
+            { value: null },
+        ],
+        ['integer-or-null union', '', { anyOf: [{ $ref: '#/definitions/integer' }, { type: 'null' }] }, 'rejected'],
+    ] as const)('%s field given %j', (_label, input, property, expected) => {
+        expect(parseWith(property, input)).toEqual(expected)
     })
 })
