@@ -385,7 +385,7 @@ const webAnalyticsWeeklyDigest = (): ToolBase<
 // --- Query wrapper schemas from schema.json ---
 
 const CompareFilter = z.object({
-    compare: z.coerce
+    compare: z
         .boolean()
         .describe('Whether to compare the current date range to a previous date range.')
         .default(false)
@@ -398,7 +398,7 @@ const CompareFilter = z.object({
         .optional(),
 })
 
-const integer = z.coerce.number().int()
+const integer = z.number().int()
 
 const PropertyOperator = z.enum([
     'exact',
@@ -471,11 +471,11 @@ const SessionPropertyFilter = z.object({
 })
 
 const CohortPropertyFilter = z.object({
-    cohort_deleted: z.coerce
+    cohort_deleted: z
         .boolean()
         .describe('Set by the feature flag API when the cohort is deleted or does not exist.')
         .optional(),
-    cohort_missing: z.coerce
+    cohort_missing: z
         .boolean()
         .describe('Set by the feature flag API when the cohort does not exist, so it cannot be restored.')
         .optional(),
@@ -484,7 +484,7 @@ const CohortPropertyFilter = z.object({
     label: z.string().optional(),
     operator: PropertyOperator.default('in'),
     type: z.literal('cohort').default('cohort'),
-    value: z.coerce.number().int(),
+    value: z.number().int(),
 })
 
 const WebAnalyticsPropertyFilter = z.union([
@@ -542,12 +542,12 @@ const AssistantWebOverviewQuery = z.object({
     dateRange: AssistantDateRangeFilter.describe(
         'Date range for the query. Defaults to the last 7 days when omitted. Keep ranges short — the backend has no upper bound and large windows on the slow path (e.g. with `conversionGoal` or `includeAvgTimeOnPage`) can be expensive.'
     ).optional(),
-    doPathCleaning: z.coerce
+    doPathCleaning: z
         .boolean()
         .describe("Apply the team's path-cleaning rules to URL-style breakdowns.")
         .default(false)
         .optional(),
-    filterTestAccounts: z.coerce
+    filterTestAccounts: z
         .boolean()
         .describe("Exclude internal and test users by applying the team's test-account filter.")
         .default(false)
@@ -597,9 +597,9 @@ const WebStatsBreakdown = z.enum([
     'FrustrationMetrics',
 ])
 
-const positive_integer = z.coerce.number().int().min(1)
+const positive_integer = z.number().int().min(1)
 
-const non_negative_integer = z.coerce.number().int().min(0)
+const non_negative_integer = z.number().int().min(0)
 
 const AssistantWebStatsTableQuery = z.object({
     breakdownBy: WebStatsBreakdown.describe(
@@ -617,29 +617,29 @@ const AssistantWebStatsTableQuery = z.object({
     dateRange: AssistantDateRangeFilter.describe(
         'Date range for the query. Defaults to the last 7 days when omitted. Keep ranges short — the backend has no upper bound and large windows on the slow path (e.g. with `conversionGoal` or `includeAvgTimeOnPage`) can be expensive.'
     ).optional(),
-    doPathCleaning: z.coerce
+    doPathCleaning: z
         .boolean()
         .describe("Apply the team's path-cleaning rules to URL-style breakdowns.")
         .default(false)
         .optional(),
-    filterTestAccounts: z.coerce
+    filterTestAccounts: z
         .boolean()
         .describe("Exclude internal and test users by applying the team's test-account filter.")
         .default(false)
         .optional(),
-    includeAvgTimeOnPage: z.coerce
+    includeAvgTimeOnPage: z
         .boolean()
         .describe(
             'Add an average-time-on-page column. Implies a Page-style breakdown. Disables the pre-aggregated fast path.'
         )
         .default(false)
         .optional(),
-    includeBounceRate: z.coerce
+    includeBounceRate: z
         .boolean()
         .describe('Add a bounce-rate column. Most useful with a path-style breakdown.')
         .default(false)
         .optional(),
-    includeHost: z.coerce
+    includeHost: z
         .boolean()
         .describe(
             'When using a path-style breakdown (`Page`, `InitialPage`, `ExitPage`, `PreviousPage`), concatenate host + pathname so the same path on different hosts is counted separately.'
@@ -669,12 +669,12 @@ const AssistantWebVitalsPathBreakdownQuery = z.object({
     dateRange: AssistantDateRangeFilter.describe(
         'Date range for the query. Defaults to the last 7 days when omitted — a good window for a stable percentile.'
     ).optional(),
-    doPathCleaning: z.coerce
+    doPathCleaning: z
         .boolean()
         .describe("Apply the team's path-cleaning rules to the returned paths.")
         .default(false)
         .optional(),
-    filterTestAccounts: z.coerce
+    filterTestAccounts: z
         .boolean()
         .describe("Exclude internal and test users by applying the team's test-account filter.")
         .default(false)
@@ -694,7 +694,7 @@ const AssistantWebVitalsPathBreakdownQuery = z.object({
         .default([])
         .optional(),
     thresholds: z
-        .array(z.coerce.number())
+        .array(z.number())
         .min(2)
         .max(2)
         .describe(

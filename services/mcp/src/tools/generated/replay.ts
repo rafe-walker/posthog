@@ -253,7 +253,7 @@ const sessionRecordingPlaylistsList = (): ToolBase<
 
 // --- Query wrapper schemas from schema.json ---
 
-const integer = z.coerce.number().int()
+const integer = z.number().int()
 
 const RecordingOrder = z.enum([
     'duration',
@@ -308,7 +308,7 @@ const AssistantGenericPropertyFilter = z.union([
         key: z.string().describe('Use one of the properties the user has provided in the plan.'),
         operator: AssistantNumericValuePropertyFilterOperator,
         type: AssistantGenericPropertyFilterType,
-        value: z.coerce.number(),
+        value: z.number(),
     }),
     z.object({
         key: z.string().describe('Use one of the properties the user has provided in the plan.'),
@@ -356,7 +356,7 @@ const AssistantGroupPropertyFilter = z.union([
         key: z.string().describe('Use one of the properties the user has provided in the plan.'),
         operator: AssistantNumericValuePropertyFilterOperator,
         type: z.literal('group').default('group'),
-        value: z.coerce.number(),
+        value: z.number(),
     }),
     z.object({
         group_type_index: integer.describe('Index of the group type from the group mapping.'),
@@ -435,7 +435,7 @@ const AssistantElementPropertyFilter = z.union([
                 'Filter by autocaptured HTML element properties (`$autocapture`, `$rageclick`). Example: `{ type: "element", key: "text", value: "Sign Up", operator: "exact" }`'
             )
             .default('element'),
-        value: z.coerce.number(),
+        value: z.number(),
     }),
     z.object({
         key: z
@@ -577,7 +577,7 @@ const AssistantRecordingPropertyFilter = z.union([
             ),
         operator: AssistantNumericValuePropertyFilterOperator,
         type: z.literal('recording').default('recording'),
-        value: z.coerce.number(),
+        value: z.number(),
     }),
     z.object({
         key: z
@@ -670,7 +670,7 @@ const AssistantRecordingsQuery = z.object({
         .nullable()
         .describe('End of the date range. Supports relative dates or ISO 8601 format. Default: now.')
         .optional(),
-    filter_test_accounts: z.coerce.boolean().describe('Exclude internal and test users. Default: false.').optional(),
+    filter_test_accounts: z.boolean().describe('Exclude internal and test users. Default: false.').optional(),
     kind: z.literal('RecordingsQuery').default('RecordingsQuery'),
     limit: integer.describe('Maximum number of recordings to return.').optional(),
     order: RecordingOrder.describe(

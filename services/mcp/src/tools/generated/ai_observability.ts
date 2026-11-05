@@ -3217,7 +3217,7 @@ const AssistantDurationRange = z.object({
 
 const AssistantDateRangeFilter = z.union([AssistantDateRange, AssistantDurationRange])
 
-const integer = z.coerce.number().int()
+const integer = z.number().int()
 
 const AssistantStringOrBooleanValuePropertyFilterOperator = z.enum([
     'exact',
@@ -3255,7 +3255,7 @@ const AssistantGenericPropertyFilter = z.union([
         key: z.string().describe('Use one of the properties the user has provided in the plan.'),
         operator: AssistantNumericValuePropertyFilterOperator,
         type: AssistantGenericPropertyFilterType,
-        value: z.coerce.number(),
+        value: z.number(),
     }),
     z.object({
         key: z.string().describe('Use one of the properties the user has provided in the plan.'),
@@ -3303,7 +3303,7 @@ const AssistantGroupPropertyFilter = z.union([
         key: z.string().describe('Use one of the properties the user has provided in the plan.'),
         operator: AssistantNumericValuePropertyFilterOperator,
         type: z.literal('group').default('group'),
-        value: z.coerce.number(),
+        value: z.number(),
     }),
     z.object({
         group_type_index: integer.describe('Index of the group type from the group mapping.'),
@@ -3382,7 +3382,7 @@ const AssistantElementPropertyFilter = z.union([
                 'Filter by autocaptured HTML element properties (`$autocapture`, `$rageclick`). Example: `{ type: "element", key: "text", value: "Sign Up", operator: "exact" }`'
             )
             .default('element'),
-        value: z.coerce.number(),
+        value: z.number(),
     }),
     z.object({
         key: z
@@ -3477,8 +3477,8 @@ const AssistantPropertyFilter = z.union([
 
 const AssistantTracesQuery = z.object({
     dateRange: AssistantDateRangeFilter.describe('Date range for the query.').optional(),
-    filterSupportTraces: z.coerce.boolean().describe('Exclude support impersonation traces.').default(false).optional(),
-    filterTestAccounts: z.coerce
+    filterSupportTraces: z.boolean().describe('Exclude support impersonation traces.').default(false).optional(),
+    filterTestAccounts: z
         .boolean()
         .describe('Exclude internal and test users by applying the respective filters.')
         .default(true)
@@ -3496,7 +3496,7 @@ const AssistantTracesQuery = z.object({
         )
         .default([])
         .optional(),
-    randomOrder: z.coerce
+    randomOrder: z
         .boolean()
         .describe(
             'Use random ordering instead of timestamp DESC. Useful for representative sampling to avoid recency bias.'
